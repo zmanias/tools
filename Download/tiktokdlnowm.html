@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+        video {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>TikTok Video Downloader</h2>
+        <input type="text" id="url" placeholder="Masukkan URL TikTok">
+        <button onclick="download()">Download</button>
+        
+        <div id="result" class="hidden">
+            <h3>Hasil Download:</h3>
+            <p id="description"></p>
+            <video id="videoPreview" controls></video>
+            <br>
+            <a id="downloadVideo" class="btn" download>Download Video</a>
+            <a id="downloadAudio" class="btn" download>Download Audio</a>
+        </div>
+    </div>
+
+    <script>
+        function download() {
+            let url = document.getElementById("url").value;
+            if (url.trim() === "") {
+                alert("Masukkan URL TikTok terlebih dahulu!");
+                return;
+            }
+
+            fetch(`https://restapi.simplebot.my.id/api/download/tiktokdl?url=${encodeURIComponent(url)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        document.getElementById("description").innerText = data.result.description;
+                        document.getElementById("videoPreview").src = data.result.video_nowm;
+                        document.getElementById("downloadVideo").href = data.result.video_nowm;
+                        document.getElementById("downloadVideo").download = "tiktok_video.mp4";
+                        document.getElementById("downloadAudio").href = data.result.audio_url;
+                        document.getElementById("downloadAudio").download = "tiktok_audio.mp3";
+                        document.getElementById("result").classList.remove("hidden");
+                    } else {
+                        alert("Gagal mengambil data, coba lagi!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Terjadi kesalahan saat mengambil data.");
+                });
+        }
+    </script>
+</body>
+</html>

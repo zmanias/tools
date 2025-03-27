@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio/Video Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            background: white;
+            padding: 20px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #quality {
+            display: none; /* Default disembunyikan */
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fandirr Convert</h1>
+        <input type="text" id="url" placeholder="Masukkan URL YouTube">
+        
+        <select id="format" onchange="toggleQuality()">
+            <option value="mp3">MP3 (Audio)</option>
+            <option value="mp4">MP4 (Video)</option>
+        </select>
+
+        <select id="quality">
+            <option value="144">144p</option>
+            <option value="240">240p</option>
+            <option value="360">360p</option>
+            <option value="480">480p</option>
+            <option value="720" selected>720p</option>
+            <option value="1080">1080p</option>
+        </select>
+
+        <button onclick="download()">Download</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function toggleQuality() {
+            let format = document.getElementById("format").value;
+            let qualitySelect = document.getElementById("quality");
+            qualitySelect.style.display = (format === "mp4") ? "block" : "none";
+        }
+
+        async function download() {
+            let url = document.getElementById('url').value.trim();
+            let format = document.getElementById('format').value;
+            let quality = document.getElementById('quality').value;
+            let resultDiv = document.getElementById('result');
+
+            if (!url) {
+                alert("Masukkan URL YouTube!");
+                return;
+            }
+
+            resultDiv.innerHTML = "Memproses...";
+
+            let apiUrl = format === "mp3" 
+                ? `https://api.fandirr.web.id/api/ytmp3?url=${encodeURIComponent(url)}` 
+                : `https://api.fandirr.web.id/api/ytmp4?url=${encodeURIComponent(url)}&quality=${quality}`;
+
+            try {
+                let response = await fetch(apiUrl);
+                let data = await response.json();
+
+                if (data.download) {
+                    resultDiv.innerHTML = `
+                        <h3>${data.title}</h3>
+                        <p>Format: ${data.format}</p>
+                        <p>Kualitas: ${format === "mp4" ? quality + "p" : "Audio"}</p>
+                        <a href="${data.download}" target="_blank" download>Download ${format.toUpperCase()}</a>
+                    `;
+                } else {
+                    resultDiv.innerHTML = "<p>Gagal mengunduh. Coba lagi!</p>";
+                }
+            } catch (error) {
+                resultDiv.innerHTML = "<p>Error: " + error.message + "</p>";
+            }
+        }
+    </script>
+</body>
+</html>

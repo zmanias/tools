@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #002be9;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        video {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Facebook Video/Reels Downloader</h2>
+        <input type="text" id="url" placeholder="Masukkan URL Facebook">
+        <button onclick="downloadVideo()">Download</button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function downloadVideo() {
+            let url = document.getElementById("url").value;
+            if (!url) {
+                alert("Masukkan URL terlebih dahulu!");
+                return;
+            }
+
+            fetch(`https://api.fandirr.web.id/api/igdl?url=${encodeURIComponent(url)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.videoUrl) {
+                        document.getElementById("result").innerHTML = `
+                            <p>Sumber: ${data.source}</p>
+                            <video controls>
+                                <source src="${data.videoUrl}" type="video/mp4">
+                                Browser Anda tidak mendukung pemutaran video.
+                            </video>
+                            <a href="${data.videoUrl}" download>
+                                <button>Download Video</button>
+                            </a>
+                        `;
+                    } else {
+                        document.getElementById("result").innerHTML = "<p>Gagal mendapatkan video.</p>";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    document.getElementById("result").innerHTML = "<p>Terjadi kesalahan.</p>";
+                });
+        }
+    </script>
+
+</body>
+</html>
