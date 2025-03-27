@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools Fandirr Store Official</title>
+    <style>
+        /* Root Variables */
+        :root {
+            --bg-color: #f4f4f4;
+            --sidebar-color: #ffffff;
+            --text-color: #333;
+            --menu-hover: rgba(0, 0, 0, 0.05);
+            --primary-color: #007bff;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --icon-color: #555;
+            --border-color: #ddd;
+            --link-color: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #222;
+            --sidebar-color: #333;
+            --text-color: #f0f0f0;
+            --menu-hover: rgba(255, 255, 255, 0.1);
+            --primary-color: #00bcd4;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --icon-color: #ccc;
+            --border-color: #444;
+            --link-color: #f0f0f0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            left: -300px;
+            background: var(--sidebar-color);
+            border-right: 3px solid var(--border-color);
+            box-shadow: 4px 0 12px var(--shadow-color);
+            transition: left 0.4s ease-in-out;
+            padding: 20px;
+            z-index: 1000;
+            border-radius: 30px;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: background 0.3s;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar ul li:hover {
+            background: var(--menu-hover);
+        }
+      
+        .menu-icon {
+            font-size: 18px;
+            margin-right: 10px;
+            color: var(--icon-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Sub-menu */
+        .sub-menu {
+            display: none;
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+
+        .sub-menu p {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sub-menu p .menu-icon {
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        .sub-menu p:hover {
+            background: var(--menu-hover);
+            border-radius: 5px;
+        }
+        .sub-menu a {
+           align-items: center;
+           transition: 0.3s;
+           text-decoration: none;
+           color: var(--link-color);
+        }
+
+        /* Main Content */
+        .content {
+            padding: 20px;
+            transition: margin-left 0.4s ease-in-out;
+        }
+
+        section {
+            padding: 50px;
+            text-align: center;
+        }
+
+        .hero {
+            background: var(--primary-color);
+            color: white;
+            padding: 80px 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px var(--shadow-color);
+        }
+
+        .services, .team {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .box {
+            background: var(--sidebar-color);
+            padding: 20px;
+            margin: 10px;
+            width: 30%;
+            box-shadow: 2px 2px 10px var(--shadow-color);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .faq {
+            text-align: left;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--sidebar-color);
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 2px 2px 5px var(--shadow-color);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .faq-item p {
+            display: none;
+            margin-top: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Buttons */
+        .menu-btn, .mode-toggle {
+            position: fixed;
+            top: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            transition: 0.3s;
+            z-index: 1100;
+            text-decoration: none;
+        }
+
+        .menu-btn { left: 15px; }
+        .mode-toggle { right: 15px; }
+
+        @media (max-width: 768px) {
+            .box {
+                width: 100%;
+            }
+        }
+/* --- Loading Screen --- */
+#loading-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e, #16213e); /* Gradient lebih modern */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 2000;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+/* --- Batu Berputar --- */
+.rock-spinner {
+    font-size: 50px;
+    animation: rotateRock 1.5s linear infinite;
+}
+
+/* --- Animasi Rotasi Batu --- */
+@keyframes rotateRock {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Text Loading dengan Efek Berkedip --- */
+#loading-screen p {
+    font-size: 18px;
+    color: #ffffff;
+    margin-top: 15px;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: blink 1.5s infinite;
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+}
+
+/* --- Efek Berkedip --- */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* --- Hide Loading Screen --- */
+#loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+    </style>
+</head>
+
+<div id="loading-screen">
+    <div class="rock-spinner">🗿</div>
+    <p>LOANJING...</p>
+</div>
+
+<body onclick="closeSidebarOutside(event)">
+
+    <button class="menu-btn" onclick="toggleSidebar()">☰ Menu</button>
+    <button class="mode-toggle" onclick="toggleMode()">🌙 Mode</button>
+
+    <div class="container">
+        <nav class="sidebar" id="sidebar"><br><br>
+            <ul>
+                <li onclick="toggleSubMenu('sub1')">
+                    <img src="https://cdn-icons-png.flaticon.com/128/4303/4303996.png" class="menu-icon" alt="icon"> Download
+                </li>
+                <div id="sub1" class="sub-menu">
+                  <a href="/Download/ytmpdl.html">
+                    <p><img src="https://cdn-icons-png.flaticon.com/128/1644/1644133.png" class="menu-icon" alt="icon"> YT MP3/MP4</p>
+                    </a>
+                    <a href="/Download/instagramdl.html">
+                    <p><img src="https://cdn-icons-png.flaticon.com/128/15707/15707749.png" class="menu-icon" alt="icon"> INSTAGRAM</p>
+                    </a>
+                    <a href="/Download/facebookdl.html">
+                    <p><img src="https://cdn-icons-png.flaticon.com/128/5968/5968764.png" class="menu-icon" alt="icon"> Facebook</p>
+                    </a>
+                   <a href="/Download/tiktokdlnowm.html">
+                    <p><img src="https://cdn-icons-png.flaticon.com/128/3046/3046126.png" class="menu-icon" alt="icon"> TikTok No Watermark</p>
+                    </a>
+                </div>
+
+                <li onclick="toggleSubMenu('sub2')">
+                    <img src="https://cdn-icons-png.flaticon.com/128/2814/2814666.png" class="menu-icon" alt="icon"> Artificial Intelligence
+                </li>
+                <div id="sub2" class="sub-menu">
+                    <p><img src="https://cdn-icons-png.flaticon.com/128/16921/16921802.png" class="menu-icon" alt="icon"> Gemini</p>
+                    <p><img src="https://cdn-user-icons.flaticon.com/174374/174374559/1740759956583.svg?token=exp=1740760857~hmac=a88d6744a88cf4b60c5a19f25f30b32b" class="menu-icon" alt="icon"> Simi Simi</p>
+                    <a href="/AI/luminai.html">
+                    <p><img src="https://cdn-user-icons.flaticon.com/174374/174374559/1740760594698.svg?token=exp=1740761502~hmac=968728a50e4b8c61652d7c4b55374490" class="menu-icon" alt="icon"> LuminAI</p>
+                    </a>
+                </div>
+                
+                <ul>
+                <li onclick="toggleSubMenu('sub3')">
+                    <img src="https://cdn-icons-png.flaticon.com/128/3357/3357334.png" class="menu-icon" alt="icon"> Menu Lainnya
+                </li>
+                <div id="sub3" class="sub-menu">
+                  <a href="/Other/nsfwgenerator.html">
+                    <p><img src="https://cdn-icons-png.flaticon.com/128/16649/16649259.png" class="menu-icon" alt="icon"> NSFW GENERATOR</p>
+                    </a>
+                    <p><img src="https://cdn-icons-png.flaticon.com/128/4303/4303996.png" class="menu-icon" alt="icon"> OKEP:v</p>
+                    <p><img src="https://cdn-icons-png.flaticon.com/128/4303/4303996.png" class="menu-icon" alt="icon"> TikTok No Watermark</p>
+                </div>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <section class="hero">
+                <h1>Selamat Datang di Website Tools Fandirr Store Official</h1>
+                <p>Dengan Di Adanya Website Ini Saya Telah Mengembangkan Beberapa Tools Yang Bisa Membantu Kebutuhan Kalian</p>
+            </section>
+            <section class="services">
+                <h2>Layanan Kami</h2>
+                <div class="box">Desain Web</div>
+                <div class="box">Pengembangan Aplikasi</div>
+                <div class="box">Konsultasi UX/UI</div>
+            </section>
+            
+            <section class="team">
+                <h2>Tim Kami</h2>
+                <div class="box">John Doe - Developer</div>
+                <div class="box">Jane Smith - Designer</div>
+                <div class="box">Alex Brown - UX Specialist</div>
+            </section>
+            
+            <section class="faq">
+                <h2>FAQ</h2>
+                <div class="faq-item" onclick="toggleFAQ(this)">
+                    <h4>Bagaimana cara memesan layanan?</h4>
+                    <p>Kunjungi halaman layanan kami dan pilih layanan yang sesuai.</p>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <p>© 2025 Fandirr Store Official</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+      window.onload = function() {
+    setTimeout(() => {
+        document.getElementById("loading-screen").classList.add("hidden");
+    }, 2000); // Menunggu 1 detik sebelum menghilangkan loading screen
+};
+      
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("open");
+        }
+
+        function toggleSubMenu(id) {
+            var subMenu = document.getElementById(id);
+            subMenu.style.display = subMenu.style.display === "block" ? "none" : "block";
+        }
+
+        function toggleMode() {
+            document.body.dataset.theme = document.body.dataset.theme === "dark" ? "" : "dark";
+        }
+
+        function toggleFAQ(item) {
+            let p = item.querySelector("p");
+            p.style.display = p.style.display === "block" ? "none" : "block";
+        }
+    </script>
+
+</body>
+</html>
