@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSFW Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: white;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+
+        input, button {
+            padding: 10px;
+            width: 90%;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            background-color: #ff5733;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff784e;
+        }
+
+        img {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        #downloadBtn {
+            display: none;
+            background-color: #008CBA;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #downloadBtn:hover {
+            background-color: #009dd9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NSFW Image Generator</h1>
+        <input type="text" id="promptInput" placeholder="Masukkan prompt...">
+        <button onclick="generateImage()">Generate</button>
+        <div id="result">
+            <p id="status"></p>
+            <img id="outputImage" src="" alt="Generated Image" style="display: none;">
+            <br>
+            <button id="downloadBtn" onclick="downloadImage()" style="display: none;">Download Gambar</button>
+        </div>
+    </div>
+
+    <script>
+        let generatedImageUrl = "";
+
+        async function generateImage() {
+            const prompt = document.getElementById("promptInput").value;
+            const statusText = document.getElementById("status");
+            const outputImage = document.getElementById("outputImage");
+            const downloadBtn = document.getElementById("downloadBtn");
+
+            if (!prompt) {
+                statusText.innerHTML = "Masukkan prompt terlebih dahulu!";
+                return;
+            }
+
+            statusText.innerHTML = "Menghasilkan gambar...";
+            outputImage.style.display = "none";
+            downloadBtn.style.display = "none";
+
+            try {
+                const response = await fetch(`https://api.fandirr.web.id/api/nsfw?prompt=${encodeURIComponent(prompt)}`);
+                const data = await response.json();
+
+                if (data.done && data.linkImage) {
+                    generatedImageUrl = data.linkImage;
+                    outputImage.src = generatedImageUrl;
+                    outputImage.style.display = "block";
+                    statusText.innerHTML = "Gambar berhasil dibuat!";
+
+                    // Menampilkan tombol download
+                    downloadBtn.style.display = "inline-block";
+                } else {
+                    statusText.innerHTML = "Gagal membuat gambar!";
+                }
+            } catch (error) {
+                statusText.innerHTML = "Terjadi kesalahan!";
+                console.error(error);
+            }
+        }
+
+        async function downloadImage() {
+            if (!generatedImageUrl) return;
+
+            try {
+                const response = await fetch(generatedImageUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "generated_image.jpg"; // Nama file
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Gagal mengunduh gambar:", error);
+            }
+        }
+    </script>
+</body>
+</html>
